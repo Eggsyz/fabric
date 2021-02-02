@@ -111,8 +111,8 @@ pkgmap.discover       := $(PKGNAME)/cmd/discover
 
 include docker-env.mk
 
-all: native docker checks
-
+# all: native docker checks
+all: native docker
 checks: basic-checks unit-test integration-test
 
 basic-checks: license spelling trailing-spaces linter check-metrics-doc
@@ -204,6 +204,7 @@ docker: $(patsubst %,$(BUILD_DIR)/image/%/$(DUMMY), $(IMAGES))
 
 native: peer orderer configtxgen cryptogen idemixgen configtxlator discover
 
+
 linter: check-deps buildenv
 	@echo "LINT: Running code checks.."
 	@$(DRUN) $(DOCKER_NS)/fabric-buildenv:$(DOCKER_TAG) ./scripts/golinter.sh
@@ -223,7 +224,7 @@ generate-metrics-doc: buildenv
 $(BUILD_DIR)/%/chaintool: Makefile
 	@echo "Installing chaintool"
 	@mkdir -p $(@D)
-	curl -fL $(CHAINTOOL_URL) > $@
+	cp build/chaintool $@
 	chmod +x $@
 
 # We (re)build a package within a docker context but persist the $GOPATH/pkg
@@ -255,6 +256,7 @@ $(BUILD_DIR)/docker/gotools: gotools.mk
 	@$(DRUN) \
 		-v $(abspath $@):/opt/gotools \
 		-w /opt/gopath/src/$(PKGNAME) \
+		-v $(abspath build/bin):/opt/gotools/tmp \
 		-v $(abspath $(BUILD_DIR)/docker/gocache):/opt/gopath/cache \
 		-e GOCACHE=/opt/gopath/cache \
 		$(BASE_DOCKER_NS)/fabric-baseimage:$(BASE_DOCKER_TAG) \

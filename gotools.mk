@@ -18,7 +18,10 @@ go.fqp.misspell      := github.com/client9/misspell/cmd/misspell
 go.fqp.mockery       := github.com/vektra/mockery
 
 .PHONY: gotools-install
-gotools-install: $(patsubst %,$(GOTOOLS_BINDIR)/%, $(GOTOOLS))
+gotools-install:
+	@cp /opt/gotools/tmp/* $(GOTOOLS_BINDIR)
+	
+# gotools-install: $(patsubst %,$(GOTOOLS_BINDIR)/%, $(GOTOOLS))
 
 .PHONY: gotools-clean
 gotools-clean:
